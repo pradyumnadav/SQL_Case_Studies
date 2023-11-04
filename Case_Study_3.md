@@ -3,6 +3,8 @@
 SELECT COUNT(DISTINCT customer_id) AS customer_count
 FROM foodie_fi.subscriptions
 ```
+<img width="271" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/200ed8cd-87fd-44f7-a7cd-8dd86b85f315">
+
 
 # 2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value?
 ```sql
