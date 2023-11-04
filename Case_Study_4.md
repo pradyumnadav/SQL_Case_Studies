@@ -6,6 +6,7 @@ SELECT COUNT(DISTINCT node_id) AS count_nodes
 FROM data_bank.plans
 ```
 <img width="223" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/11fefd5a-8ac7-4498-91af-4bd89599c8c1">
+
 ## 2. What is the number of nodes per region?
 ```sql
 SELECT region_id, COUNT(DISTINCT node_id) AS nodes_per_region
@@ -22,6 +23,9 @@ FROM data_bank.plans
 GROUP BY region_id
 ORDER BY region_id
 ```
+
+<img width="346" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/5c045639-d9d1-4704-8f31-699f4b2edc6a">
+
 
 ## 4.How many days on average are customers reallocated to a different node?
 ```sql
