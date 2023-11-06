@@ -14,6 +14,7 @@
 >All datasets exist within the foodie_fi database schema - be sure to include this reference within your SQL scripts as you start exploring the data and answering the case study questions.
 
 Here is the ERD:
+
 <img width="710" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/f58be2fb-b455-4b6c-aeea-816b6a609834">
 
 Here are the questions and my solutions:
