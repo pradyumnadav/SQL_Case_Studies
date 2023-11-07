@@ -1,6 +1,7 @@
 # Data Cleaning Queries:
 ## 1. Set exclusions and extras = 'null' when they are blank :
 
+
 ```sql
 UPDATE pizza_runner.customer_orders
 SET exclusions = 'null'
@@ -13,6 +14,8 @@ SET extras = 'null'
 WHERE extras = '' 
 ```
 ## 2. Set cancellation to be 'delivered' when it is either null or blank- meaning the orders were delivered
+
+
 ```sql
 UPDATE pizza_runner.runner_orders
 SET cancellation = 'delivered'
@@ -20,6 +23,10 @@ WHERE cancellation IS NULL or cancellation = ''
 ```
 
 ## 3. Clean up the distance column:
+
+When distance is null then the order was not delivered, so set distance = 0. The other instances use the LEFT() function to extract either the first two digits (when distance is stored without decimals) or the first four digits (when distance is stored with decimals).
+
+
 ```sql
 ALTER TABLE pizza_runner.runner_orders
 ADD COLUMN delivery_distance NUMERIC(4,2)
@@ -43,6 +50,9 @@ WHERE distance LIKE '%km' OR distance = 'null' OR distance NOT LIKE '%km';
 
 
 ## 4. Clean up duration column:
+
+Duration is set to be 0 if the original duration is null (meaning order was cancelled). Otherwise, extract the first two digits for duration.
+
 ```sql
 ALTER TABLE pizza_runner.runner_orders
 ADD COLUMN duration_minutes NUMERIC(4,2);
@@ -59,6 +69,9 @@ WHERE duration != 'null' OR duration = 'null';
 ```
 
 ## 5. Clean up pickup_time column:
+
+Set pickup time to a default placeholder value of 1970-01-01 when the pickup time is null. 
+
 ```sql
 
 ALTER TABLE pizza_runner.runner_orders
@@ -80,6 +93,9 @@ WHERE pickup_time != 'null'
 # Pizza Metrics- Data Analysis
 
 ## 1.How many pizzas were ordered?
+
+Count the total number of orders.
+
 ```sql
 SELECT COUNT(order_id) AS num_orders
 FROM pizza_runner.customer_orders
@@ -88,6 +104,8 @@ FROM pizza_runner.customer_orders
 <img width="279" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/a951826d-1462-4d02-b707-a391bc1b4a1b">
 
 ## 2. How many unique customer orders were made?
+
+Use a count distinct of the number of customers to find the unique number of customer orders.
 
 ```sql
 SELECT COUNT(DISTINCT customer_id) AS unique_cust_orders
@@ -98,6 +116,8 @@ FROM pizza_runner.customer_orders
 
 
 ## 3. How many successful orders were delivered by each runner?
+Group by runner id and count the number of orders that were delivered.
+
 ```sql
 SELECT runner_id, COUNT(order_id) AS orders_delivered
 FROM pizza_runner.runner_orders
@@ -110,6 +130,8 @@ ORDER BY runner_id
 
 
 ## 4. How many of each type of pizza was delivered?
+Group by pizza id and count the number of orders that were delivered.
+
 ```sql
 SELECT C.pizza_id, COUNT(R.order_id) AS pizzas_delivered
 FROM pizza_runner.runner_orders R JOIN pizza_runner.customer_orders C 
@@ -119,7 +141,10 @@ GROUP BY C.pizza_id
 ```
 <img width="428" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/53c9e14d-3442-47a4-853e-2c27be933685">
 
-## 5. How many Vegetarian and Meatlovers were ordered by each customer?
+## 5. How many Vegetarian and Meatlovers pizzas were ordered by each customer?
+
+
+
 ```sql
 SELECT C.customer_id, P.pizza_name, COUNT(C.order_id) AS Pizzas_Ordered
 FROM pizza_runner.customer_orders C JOIN pizza_runner.pizza_names P
@@ -132,6 +157,10 @@ ORDER BY C.customer_id, Pizzas_Ordered DESC
 
 
 ## 6. What was the maximum number of pizzas delivered in a single order?
+
+- Utilise a CTE to calculate the number of pizzas ordered in each order id.
+- Then find the maximum of pizzas ordered in a single order and display it.
+
 ```sql
 WITH CTE AS (
   SELECT order_id, COUNT(pizza_id) as num_pizzas
@@ -147,6 +176,9 @@ LIMIT 1
 <img width="431" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/f76932e5-7592-4fb5-bfd1-a5e5bff46c37">
 
 ## 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+- Use conditional aggregation and count the number of orders where either exlcusions or extras was NOT null, meaning there were either exclusions or extras ordered by the customer. This is the count of changed orders.
+- When both exclusions and extras was null, these are unchanged orders. 
+
 ```sql
 SELECT C.customer_id,
 COUNT(CASE WHEN C.exclusions != 'null' OR C.extras != 'null' THEN 1 END) AS changed_orders,
@@ -159,10 +191,8 @@ ORDER BY C.customer_id
 ```
 <img width="501" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/753f949b-c44e-4473-bf35-c0409689e8d4">
 
-
-
-
 ## 8. How many pizzas were delivered that had both exclusions and extras?
+- Count the number of delivered orders where both exclusions and extras were not null, meaning these orders had both exclusions and extras.
 
 ```sql
 SELECT COUNT(CASE WHEN C.exclusions != 'null' AND C.extras != 'null' THEN 1 END) AS ExclusionsAndExtras_orders
@@ -174,6 +204,8 @@ WHERE R.cancellation = 'delivered'
 <img width="285" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/d7b0c021-496a-469a-aa91-3e941f753e76">
 
 ## 9. What was the volume of pizzas for each hour of the day?
+Use the extract function to find the hour of order time for each placed order and then count the number of orders per each hour. 
+
 ```sql
 SELECT EXTRACT(hour FROM order_time) AS hour_of_order, COUNT(order_id) AS count_orders
 FROM pizza_runner.customer_orders
@@ -183,6 +215,8 @@ ORDER BY hour_of_order
 <img width="398" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/3c06cf85-71a2-4c38-8813-e0f97923a07b">
 
 ## 10. What was the volume of pizzas for each week?
+Use the FORMAT_DATETIME() function to find the day of week for each order placed. Then count the number of orders placed on each day of the week.
+
 ```sql
 SELECT FORMAT_DATETIME('%A', order_time) AS day_of_week, COUNT(order_id)
 FROM pizza_runner.customer_orders
@@ -194,17 +228,24 @@ ORDER BY day_of_week
 # 2. Runner and Customer Experience: Data Analysis
 
 ## 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
+- Starting from January 01 2021, with Week 1 being the first week of Jan, find the number of runners who signed up in each week.
+- Extract the day and converted it to week by dividing by, offset this value by +1 to make the first week of January as Week 1.
+- Count the number of runners.
+
 ```sql
 SELECT CAST((EXTRACT(DAY FROM registration_date) / 7) + 1 AS INT64) AS week_registration, COUNT(runner_id) AS registered_runners
 FROM pizza_runner.runners
 GROUP BY week_registration
 ORDER BY registered_runners DESC
 ```
-The query extracted day and converted it to week by dividing by 7 and adding 1
+
 
 <img width="435" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/cc4a8915-c129-43ab-a1de-d2a4bbe97ce2">
 
 ## 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+- In a CTE, for each runner's order, subtract pickup time from the order time and Extract minutes to find the number of minutes elapsed between the order time and pickup time.
+- Use the CTE data to find the average of pikcup time in minutes for each runner.
+
 ```sql
 WITH CTE AS(
 SELECT O.runner_id, EXTRACT(MINUTE FROM (O.pickup_dateTime - C.order_time)) AS runner_time
@@ -218,8 +259,12 @@ ORDER BY avg_runner_time_mins
 <img width="432" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/3dfb9027-de01-4cb3-a01a-d7752cde0d23">
 
 ## 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
+- In a CTE: For each order, count the number of pizzas ordered and the time elapsed in minutes between pickup time and order time, only for delivered orders.
+- Count the average prep time based on number of pizzas, through a group by of the number of pizzas.
+
 ```sql
-WITH CTE AS (SELECT C.order_id, COUNT(C.pizza_id) AS num_pizzas, EXTRACT(MINUTE FROM (O.pickup_dateTime - C.order_time)) AS prep_time
+WITH CTE AS (
+SELECT C.order_id, COUNT(C.pizza_id) AS num_pizzas, EXTRACT(MINUTE FROM (O.pickup_dateTime - C.order_time)) AS prep_time
 FROM pizza_runner.customer_orders C JOIN pizza_runner.runner_orders O ON C.order_id = O.order_id
 WHERE O.cancellation = 'delivered'
 GROUP BY C.order_id, O.pickup_dateTime, C.order_time
@@ -231,7 +276,11 @@ ORDER BY num_pizzas
 ```
 <img width="373" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/e0f090a5-2f79-47b4-b2df-90c53bb6a155">
 
+Average prep time increases as the number of pizzas ordered increases.
+
 ## 4. What was the average distance travelled for each customer?
+Group by customer id and find the average delivery distance.
+
 ```sql
 SELECT C.customer_id, ROUND(AVG(O.delivery_distance),1) AS avg_distance_km
 FROM pizza_runner.customer_orders C JOIN pizza_runner.runner_orders O ON C.order_id = O.order_id
@@ -252,8 +301,10 @@ FROM pizza_runner.runner_orders
 <img width="258" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/55c9cee2-d71b-4404-9abb-754fa4cd11eb">
 
 ## 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
+- Speed = distance/time in Kilometers per hour. 
+
 ```sql
-SELECT DISTINCT order_id,runner_id, ROUND(delivery_distance / (duration_minutes/60), 2) AS average_speed
+SELECT DISTINCT order_id, runner_id, ROUND(delivery_distance / (duration_minutes/60), 2) AS average_speed
 FROM pizza_runner.runner_orders 
 WHERE cancellation = 'delivered'
 ORDER BY order_id
