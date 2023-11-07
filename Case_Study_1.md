@@ -25,7 +25,7 @@ Here is the ERD Diagram:
 <b> This case study contains 10 questions, to be answered through SQL queries. Here are the questions and my solutions:
 
 
-# 1. What is the total amount spent by each customer? 
+## 1. What is the total amount spent by each customer? 
 
 - The Sales table contains the customer id, order date and products id for the products bought. The Menu table contains the product id and their prices. Therefore, Join the Sales table with the Menu table to group by each customer and find the total amount spent.
 ```sql
@@ -38,7 +38,7 @@ ORDER BY Amount_Spent
 <img width="429" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/c978dc8f-9d63-441f-b858-9c1248984a65">
 
 
-#2. How many days has each customer visited the restaurant?
+## 2. How many days has each customer visited the restaurant?
 
 A distinct count of the order date, grouped by each customer id, will return the amount of days the customer has visited the restaurant.
 
@@ -50,7 +50,7 @@ ORDER BY Days_Visited DESC;
 ```
 <img width="436" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/beee134f-3cf1-42f0-828c-4164dd1d656b">
 
-#3. What was the first item ordered by each customer?
+## 3. What was the first item ordered by each customer?
 
 A dense rank, when partitioned by the Customer id and ordered by the order date in ascending order, will assign a rank to each order placed by the customer, with rank 1 being the first ever order placed by the customer. If a customer has ordered multiple items in their first ever orders, dense rank assigns 1 to each item, so that possibility has also been accounted for.
 - A CTE is used to join the sales and menu tables and assign the ranks to each customer's orders based on the order date. The CTE is then filtered out by rank = 1, to show only the items ordered in the customer's first ever order.
@@ -69,7 +69,7 @@ GROUP BY customer_id, product_name
 
 <img width="531" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/270013f2-4147-4432-99fc-5058b56f30f7">
 
-#4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+## 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 
 Group by the product name and count the number of times each product was ordered. Order the query by purchase count in <b> Descending order and show only the first row.
 
@@ -83,7 +83,7 @@ LIMIT 1
 ```
 <img width="427" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/0ce64511-e47a-4e6b-ab48-28611697ae7b">
 
-#5. Which item was the most popular for each customer?
+## 5. Which item was the most popular for each customer?
 
 In a CTE, Group by each customer id and Product to find a count of the number of times that customer ordered a particular product. Also assign a rank to the purchase counts using the RANK() function. Then filter the CTE to find only purchases with Rank 1 for each customer.
 
@@ -103,7 +103,7 @@ ORDER BY customer_id
 <img width="614" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/1f9a4dc1-05b7-451d-89e6-0879dec7fb89">
 
 
-#6. Which item was purchased first by the customer after they became a member?
+## 6. Which item was purchased first by the customer after they became a member?
 
 All 3 tables in the ERD were required to answer this question. After the join, we get one unified table which contains the information about each customer's orders and their membership details. Use the membership join date and order date, to find only the orders placed by each customer <b> after </b> they became a member. Use the RANK() window function to assign a rank to each customer's order, in a CTE. Filter the CTE to only display the first ranked orders, which are the first orders placed by the customer after becoming a member.
 
@@ -122,7 +122,7 @@ ORDER BY customer_id
 
 <img width="694" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/2bf36c58-e4be-4d38-9530-03a59be083aa">
 
-#7. Which item was purchased just before the customer became a member?
+## 7. Which item was purchased just before the customer became a member?
 
 This question is a slight twist on the previous question. So the orders of each customer and their membership join date are used to find all orders placed by the customer <b> before they became a member. Then find the item purchased just before becoming a member using the RANK function.
 
@@ -141,7 +141,7 @@ ORDER BY customer_id
 
 <img width="647" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/47cbd269-4978-461d-bbd1-0774fd3f5110">
 
-#8. What is the total items and amount spent for each member before they became a member?
+## 8. What is the total items and amount spent for each member before they became a member?
 
 Again, the membership join date can be used to find the orders placed by customers before they became a member. Then find the number of items purchased and total amount spent.
 
@@ -155,7 +155,7 @@ GROUP BY S.customer_id
 
 <img width="529" alt="image" src="https://github.com/pradyumnadav/SQL_Case_Studies/assets/132384475/8cbe626d-d762-4b1e-a915-ae7f460c48eb">
 
-#9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+## 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 
 This question was solved using two CTEs. 
 - First: Join the sales and menu tables to find the customer id and the amount of money they spent on each product, through a group by done on customer id and product name.
