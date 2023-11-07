@@ -1,3 +1,14 @@
+# Case Study 7: Balanced Tree Clothing Co.
+Here is the official introduction and problem statement for this case study:
+>Introduction
+>Balanced Tree Clothing Company prides themselves on providing an optimised range of clothing and lifestyle wear for the modern adventurer!
+>
+>Danny, the CEO of this trendy fashion company has asked you to assist the team’s merchandising teams analyse their sales performance and generate a basic financial report to share with the wider business.
+>
+>Available Data:
+For this case study there is a total of 4 datasets for this case study - however you will only need to utilise 2 main tables to solve all of the regular questions, and the additional 2 tables are used only for the bonus challenge question!
+>
+
 # High Level Sales Analysis
 
 ## 1. What was the total quantity sold for all products?
@@ -36,6 +47,8 @@ FROM balanced_tree.sales
 
 
 ## 2. What is the average unique products purchased in each transaction?
+- Find the number of products purchased in each transaction i.e quantity. Then find the overall average
+
 ```sql
 
 WITH CTE AS(
@@ -51,6 +64,10 @@ FROM CTE
 
 
 ## 3. What are the 25th, 50th and 75th percentile values for the revenue per transaction?
+
+- Discount is given in percentage. Therefore revenue = quantity * price * (1 - discount / 100)
+- The PERCENTILE_CONT() function can be used to find the 25th, 50th and 75th percentiles of revenues.
+
 ```sql
 WITH transaction_revenues AS(
   SELECT txn_id, SUM(qty * price * (1 - discount/100)) AS revenue
